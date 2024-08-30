@@ -11,11 +11,20 @@ using static StartScreen.pinvoke;
 using System.Windows.Media;
 using System.Windows;
 using System.Reflection.Metadata;
+using System.Runtime.InteropServices;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement.StartPanel;
 
 namespace StartScreen
 {
     public class Utils
     {
+        [DllImport("shell32.dll", EntryPoint = "#261",
+               CharSet = CharSet.Unicode, PreserveSig = false)]
+        public static extern void GetUserTilePath(
+            string username, UInt32 whatever, // 0x80000000
+            StringBuilder picpath, int maxLength
+        );
+
         public static String getWallpaperPath()
         {
             Logger.info("[Utils] Using Fallback Wallpaper Method!");
@@ -41,14 +50,20 @@ namespace StartScreen
         public static BitmapImage GetUserimage()
         {
             Logger.info("[Utils] GetUserImage() Called");
-            if (File.Exists(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + @"\Temp\" + Environment.UserName + ".bmp"))
-            {
-                return new BitmapImage(new Uri(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + @"\Temp\" + Environment.UserName + ".bmp"));
-            }
-            else
-            {
-                return null;
-            }
+
+            // Does not work on my machine (Windows 10 22H2)
+            //if (File.Exists(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + @"\Temp\" + Environment.UserName + ".bmp"))
+            //{
+            //    return new BitmapImage(new Uri(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + @"\Temp\" + Environment.UserName + ".bmp"));
+            //}
+            //else
+            //{
+            //    return null;
+            //}
+
+            var sb = new StringBuilder(1000);
+            GetUserTilePath(null, 0x80000000, sb, sb.Capacity);
+            return new BitmapImage(new Uri(sb.ToString(), UriKind.Absolute));
         }
         public static Image CaptureScreen()
         {
@@ -90,6 +105,23 @@ namespace StartScreen
         {
             Logger.info("[P/Invoke] GetDesktopWallpaper() Called");
             return DrawToImage(User32.FindWindow("Progman",null));
+        }
+
+        public static ImageSource BitmapFromUri(Uri source)
+        {
+            if (source == null)
+                return new BitmapImage(source);
+
+            using (var fs = new FileStream(source.LocalPath, FileMode.Open))
+            {
+                var bitmap = new BitmapImage();
+                bitmap.BeginInit();
+                bitmap.StreamSource = fs;
+                bitmap.CacheOption = BitmapCacheOption.OnLoad;
+                bitmap.EndInit();
+                bitmap.Freeze();
+                return bitmap;
+            }
         }
     }
 }

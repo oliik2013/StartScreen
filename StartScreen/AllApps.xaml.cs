@@ -29,24 +29,18 @@ namespace StartScreen
     public partial class AllApps : Page
     {
         List<string> appTag = new List<string>();
+
         public AllApps()
         {
             InitializeComponent();
             listBox.Loaded += ListBox_Loaded;
             listBox.Unloaded += ListBox_Unloaded;
-            listBox.Items.SortDescriptions.Add(new SortDescription("Name", ListSortDirection.Ascending));
-            listBox.ItemsSource = MainWindow.Instance.appListNameFriendly;
-            foreach (AppsIcons obj in MainWindow.Instance.appList)
-            {
-                Logger.info("Adding " + obj.Name + " to tag list");
-                appTag.Add(obj.Name);
-            }
-            Logger.info("[AllApps] Menu Executed!");
+            sortByAlphabet();
         }
 
         private void ListBox_Unloaded(object sender, RoutedEventArgs e)
         {
-            
+
         }
 
         private void ListBox_Loaded(object sender, RoutedEventArgs e)
@@ -56,7 +50,7 @@ namespace StartScreen
 
         private void Button_Click(object sender, RoutedEventArgs e)
         {
-            
+
             MainWindow.Instance.content.GoBack();
             //MainWindow.Instance.imageBackground.Opacity = 1;
             //MainWindow.Instance.imageBackground.Effect = new BlurEffect { Radius = 24, RenderingBias = RenderingBias.Performance };
@@ -90,6 +84,50 @@ namespace StartScreen
         private void listBox_PreviewKeyUp(object sender, KeyEventArgs e)
         {
             e.Handled = true;
+        }
+
+        private void sortByAlphabet()
+        {
+            listBox.Items.Clear();
+            listBox.Items.SortDescriptions.Add(new SortDescription("Name", ListSortDirection.Ascending));
+            listBox.ItemsSource = MainWindow.Instance.appListNameFriendly;
+            foreach (AppsIcons obj in MainWindow.Instance.appList)
+            {
+                Logger.info("Adding " + obj.Name + " to tag list");
+                appTag.Add(obj.Name);
+            }
+            Logger.info("[AllApps] Menu Executed!");
+        }
+
+        // by alphabet
+        private void ComboBoxItem_Selected(object sender, RoutedEventArgs e)
+        {
+            sortByAlphabet();
+        }
+
+        private void sortByZphabet()
+        {
+            listBox.Items.Clear();
+            listBox.Items.SortDescriptions.Add(new SortDescription("Name-ztoa", ListSortDirection.Descending));
+            listBox.ItemsSource = MainWindow.Instance.appListNameFriendly;
+            foreach (AppsIcons obj in MainWindow.Instance.appList)
+            {
+                Logger.info("Adding " + obj.Name + " to tag list");
+                appTag.Add(obj.Name);
+            }
+            Logger.info("[AllApps] Menu Executed!");
+        }
+
+        // by zphabet
+        private void ComboBoxItem_Selected_1(object sender, RoutedEventArgs e)
+        {
+            sortByZphabet();
+        }
+
+        // by categories
+        private void ComboBoxItem_Selected_2(object sender, RoutedEventArgs e)
+        {
+
         }
     }
     public class AppsIcons

@@ -8,14 +8,42 @@
       d:DesignHeight="768" d:DesignWidth="1280"
       Title="AllApps">
     <Grid>
-        <Label Content="All Apps" HorizontalAlignment="Left" Margin="74,144,0,0" VerticalAlignment="Top" FontSize="32" Foreground="White"/>
-        <Button Content="" HorizontalAlignment="Left" Margin="74,64,0,0" VerticalAlignment="Top" Height="48" Width="65" FontFamily="Segoe MDL2 Assets" FontSize="24" Click="Button_Click"/>
-        <ListBox x:Name="listBox" Background="#11000000" PreviewKeyDown="listBox_PreviewKeyDown" PreviewKeyUp="listBox_PreviewKeyUp" SelectionChanged="listBox_SelectionChanged" Margin="74,213,74,81" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+        <Button Content="" HorizontalAlignment="Left" Margin="74,0,0,74" VerticalAlignment="Bottom"
+                Height="48" Width="65" FontFamily="Segoe MDL2 Assets" FontSize="24" Click="Button_Click" BorderThickness="0,0,0,0"/>
+
+        <Label Content="Apps" HorizontalAlignment="Left" Margin="74,33,0,0"
+               VerticalAlignment="Top" FontSize="64" Foreground="White" FontFamily="Segoe WP Light"/>
+
+        <!--<Label Content="Sort Options" Margin="230,86,0,0" FontSize="24"
+               HorizontalAlignment="Left" VerticalAlignment="Top" Foreground="White">
+            <Label.ContextMenu>
+                <ContextMenu x:Name="sortOpts">
+                    <MenuItem Header="by Alphabet" Click="ComboBoxItem_Selected"/>
+                    <MenuItem Header="by Zphabet" Click="ComboBoxItem_Selected_1"/>
+                    <MenuItem Header="by Categories" Click="ComboBoxItem_Selected_2"/>
+                </ContextMenu>
+            </Label.ContextMenu>
+        </Label>-->
+
+        <ComboBox Margin="230,86,0,0" Background="{x:Null}"
+                  BorderBrush="#00000000" Width="140" x:Name="SortOpts">
+            <ComboBoxItem Content="by Alphabet" Selected="ComboBoxItem_Selected"/>
+            <ComboBoxItem Content="by Zphabet" Selected="ComboBoxItem_Selected_1"/>
+            <ComboBoxItem Content="by Categories" Selected="ComboBoxItem_Selected_2"/>
+        </ComboBox>
+
+        <TextBox Text="Search" Margin="936,70,0,0" VerticalAlignment="Top" Width="285"/>
+
+        <ListBox x:Name="listBox" Background="Transparent" PreviewKeyDown="listBox_PreviewKeyDown"
+                 PreviewKeyUp="listBox_PreviewKeyUp" SelectionChanged="listBox_SelectionChanged"
+                 Margin="74,164,0,144" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+
             <ListBox.ItemsPanel>
                 <ItemsPanelTemplate>
-                    <WrapPanel Orientation="Horizontal" ItemWidth="216" ItemHeight="54"/>
+                    <WrapPanel Orientation="Horizontal" ItemWidth="216" ItemHeight="54" IsItemsHost="True"/>
                 </ItemsPanelTemplate>
             </ListBox.ItemsPanel>
+
             <ListBox.ItemTemplate>
                 <DataTemplate>
                     <StackPanel>

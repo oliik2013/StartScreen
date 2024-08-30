@@ -29,14 +29,23 @@ namespace StartScreen
     public partial class MainWindow : Window
     {
         public static MainWindow Instance;
+
         [DllImport("user32.dll", CharSet = CharSet.Auto)]
         public static extern IntPtr SendMessage(IntPtr hWnd, uint Msg, uint wParam, uint lParam);
+
         public DispatcherTimer counter2 = new DispatcherTimer();
         DispatcherTimer counter = new DispatcherTimer();
         bool initialized = false;
+
+        /// <summary>
+        /// Sets whether to use the user desktop wallpaper or not
+        /// (before this will be used to draw the entire desktop with no windows)
+        /// </summary>
         bool userBackgroundEnabled = true;
+
         public AllApps allApps;
         public Home homeScreen;
+
         public MainWindow()
         {
             alreadyShowing = true;
@@ -62,37 +71,19 @@ namespace StartScreen
                 checkLauncher.Start();
                 Logger.info("Launcher Checker has been started");
                 Loaded += MainWindow_Loaded;
-                this.Background = SystemParameters.WindowGlassBrush;
-                Logger.info("Background has been set to Accent Color");
                 homeScreen = new Home();
                 content.Navigate(homeScreen, new EntranceNavigationTransitionInfo());
                 new Thread(() =>
                 {
-                    if(userBackgroundEnabled)
+                    if (userBackgroundEnabled)
                     {
-                        Logger.info("Getting user background");
-                        // Background Logic
-                        MemoryStream ms = new MemoryStream();
-                        Logger.info("ms Instance: " + ms.ToString());
-                        // Save to a memory stream...
-                        Utils.getDesktopWallpaper().Save(ms, ImageFormat.Bmp);
-                        Logger.info("Desktop Wallpaper saved as BMP in Memory");
-                        ms.Seek(0, SeekOrigin.Begin);
-                        Logger.info("Resetted Memory Stream Seek Distance to 0");
-                        BitmapImage bi = new BitmapImage();
-                        bi.BeginInit();
-                        Logger.info("BitmapImage has been initialized");
-                        bi.StreamSource = ms;
-                        bi.EndInit();
-                        bi.Freeze();
-                        Logger.info("BitmapImage has been frozen");
+                        Logger.info("Getting user's desktop wallpaper");
                         imageBackground.Dispatcher.Invoke(() =>
-                        {
-                            Logger.info("Setting imageBackground as User Background");
-                            imageBackground.Source = bi;
-                        });
+                            imageBackground.Source = Utils.BitmapFromUri(new Uri(Utils.getWallpaperPath()))
+                        );
+                        Logger.info("Done getting user's desktop wallpaper");
                     }
-                    
+
                 }).Start();
                 imageBackground.Opacity = 0.5;
                 Logger.info("Background Opacity has been set to 1");
@@ -105,7 +96,8 @@ namespace StartScreen
                 Logger.info("Listing All Apps");
                 foreach (var app in (IKnownFolder)appsFolder)
                 {
-                    
+
+
                     Logger.info("Name : " + app.Name + " | ID : " + app.ParsingName);
                     // The friendly app name
                     string name = app.Name;
@@ -114,8 +106,16 @@ namespace StartScreen
                                                              // You can even get the Jumbo icon in one shot
                     BitmapSource icon = app.Thumbnail.SmallBitmapSource;
                     //appList.SortDescriptions.Add(new System.ComponentModel.SortDescription("NAME", System.ComponentModel.ListSortDirection.Ascending));
-                    appList.Add(new AppsIcons { Icon = icon, Name = name + "[" + appUserModelID });
-                    appListNameFriendly.Add(new AppsIcons { Icon = icon, Name = name });
+                    appList.Add(new AppsIcons
+                    {
+                        Icon = icon,
+                        Name = name + "[" + appUserModelID
+                    });
+                    appListNameFriendly.Add(new AppsIcons
+                    {
+                        Icon = icon,
+                        Name = name
+                    });
                     Logger.info("Added Successfully");
                 }
                 initialized = true;
@@ -141,7 +141,7 @@ namespace StartScreen
                 }
                 this.Opacity = 0;
                 this.Show();
-                if(content.CanGoBack)
+                if (content.CanGoBack)
                     content.GoBack();
                 //Home.beginTilesInit();
                 counter.Start();
@@ -154,27 +154,9 @@ namespace StartScreen
                     if (userBackgroundEnabled)
                     {
                         Logger.info("Getting user background");
-                        // Background Logic
-                        MemoryStream ms = new MemoryStream();
-                        Logger.info("ms Instance: " + ms.ToString());
-                        // Save to a memory stream...
-                        Utils.getDesktopWallpaper().Save(ms, ImageFormat.Bmp);
-                        Logger.info("Desktop Wallpaper saved as BMP in Memory");
-                        ms.Seek(0, SeekOrigin.Begin);
-                        Logger.info("Resetted Memory Stream Seek Distance to 0");
-                        BitmapImage bi = new BitmapImage();
-                        bi.BeginInit();
-                        Logger.info("BitmapImage has been initialized");
-                        bi.StreamSource = ms;
-                        bi.EndInit();
-                        bi.Freeze();
-                        Logger.info("BitmapImage has been frozen");
                         imageBackground.Dispatcher.Invoke(() =>
-                        {
-                            Logger.info("Setting imageBackground as User Background");
-                            imageBackground.Source = bi;
-                        });
-                        
+                            imageBackground.Source = Utils.BitmapFromUri(new Uri(Utils.getWallpaperPath()))
+                        );
                     }
 
                 }).Start();
@@ -222,7 +204,7 @@ namespace StartScreen
         bool startPressed = false;
         private void Grid_KeyDown(object sender, System.Windows.Input.KeyEventArgs e)
         {
-            if(e.Key == Key.LWin || e.Key == Key.RWin)
+            if (e.Key == Key.LWin || e.Key == Key.RWin)
             {
                 startPressed = true;
                 Home.closeAppAnim();
@@ -230,7 +212,7 @@ namespace StartScreen
         }
         private void mainWindow_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
-            
+
         }
 
         private void mainWindow_Deactivated(object sender, EventArgs e)

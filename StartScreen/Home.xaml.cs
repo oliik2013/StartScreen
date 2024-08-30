@@ -36,36 +36,31 @@ namespace StartScreen
         //public List<tileData> tiles = new List<tileData>();
         TileBackend tile = new TileBackend();
         //public static Button desktopTile;
-        
+
         public Home()
         {
             Instance = this;
             InitializeComponent();
-            //desktopTile = DesktopTile;
-            //Tiles.Add(DesktopTile);
+            
+            // User name
             username.Content = Environment.UserName;
-            // Profile Picture
-            var image = new ImageBrush();
-            image.ImageSource = Utils.GetUserimage();
-            profilePicture.Fill = image;
-            //DesktopTile.Background = SystemParameters.WindowGlassBrush;
+
+            // User avatar
+            profilePicture.Fill = new ImageBrush(Utils.GetUserimage());
+
             beginTilesInit();
             MainWindow.Instance.counter2.Tick += new EventHandler(MainWindow.Instance.windowAnim2);
             MainWindow.Instance.counter2.Interval = new TimeSpan(0, 0, 0, 0, 2);
         }
+
         public void beginTilesInit()
         {
             Logger.info("Initializing Tiles");
             tile.initDefaultTiles();
-            //tiles.Add(new tileData { Size = tileSize.small });
-            // Desktop Background Image
-            Logger.info("Getting background image for desktop tile");
-            var bgImageBrush = new ImageBrush(BitmapFromUri(new Uri(Utils.getWallpaperPath())));
-            bgImageBrush.Stretch = Stretch.UniformToFill;
-            //desktopTile.Background = bgImageBrush;
-            //this.Background = new SolidColorBrush(System.Windows.Media.Color.FromArgb(0xFF, 0, 0, 0));
+            
             TileList.Items.Clear();
-            foreach(TileBackend.tileData data in tile.data) 
+            
+            foreach (TileBackend.tileData data in tile.data)
             {
                 Logger.info("Adding " + data.name + " to tile list");
                 Tile tile;
@@ -76,7 +71,6 @@ namespace StartScreen
                         Content = "Desktop",
                         HorizontalContentAlignment = HorizontalAlignment.Left,
                         VerticalContentAlignment = VerticalAlignment.Bottom,
-                        Background = bgImageBrush
                     };
                     TileList.Items.Add(tile);
                     tile.Click += hideDesktopTile_Click;
@@ -87,8 +81,7 @@ namespace StartScreen
                     {
                         Content = data.name,
                         HorizontalContentAlignment = HorizontalAlignment.Left,
-                        VerticalContentAlignment = VerticalAlignment.Bottom,
-                        Background = bgImageBrush
+                        VerticalContentAlignment = VerticalAlignment.Bottom
                     };
                     TileList.Items.Add(tile);
                     tile.Click += Tile_Click;
@@ -98,11 +91,11 @@ namespace StartScreen
 
         private void Tile_Click(object sender, RoutedEventArgs e)
         {
-            foreach(TileBackend.tileData data in tile.data)
+            foreach (TileBackend.tileData data in tile.data)
             {
-                if(sender is Tile)
+                if (sender is Tile)
                 {
-                    if((sender as Tile).Content == data.name)
+                    if ((sender as Tile).Content == data.name)
                     {
                         Logger.info("Executing " + data.programPath);
                         try
@@ -114,7 +107,7 @@ namespace StartScreen
                         }
                         catch (Exception ex)
                         {
-                            Logger.info("An error occured while trying to run " + data.programPath);
+                            Logger.info("An error occurred while trying to run " + data.programPath);
                             Logger.info(ex.ToString());
                         }
                     }
@@ -127,26 +120,11 @@ namespace StartScreen
             closeAppAnim();
         }
 
-        public static ImageSource BitmapFromUri(Uri source)
-        {
-            if (source == null)
-                return new BitmapImage(source);
-
-            using (var fs = new FileStream(source.LocalPath, FileMode.Open))
-            {
-                var bitmap = new BitmapImage();
-                bitmap.BeginInit();
-                bitmap.StreamSource = fs;
-                bitmap.CacheOption = BitmapCacheOption.OnLoad;
-                bitmap.EndInit();
-                bitmap.Freeze();
-                return bitmap;
-            }
-        }
         private void Button_Click(object sender, RoutedEventArgs e)
         {
             closeAppAnim();
         }
+
         public static void closeAppAnim()
         {
             try
@@ -204,8 +182,16 @@ namespace StartScreen
             Process.Start("shutdown", "-r -t 000");
         }
 
+        [DllImport("winuser.dll")]
+        public static extern int ExitWindows(int one, int two);
+
+        private void logout_Click(object sender, RoutedEventArgs e)
+        {
+            ExitWindows(0, 0);
+        }
+
         [DllImport("user32.dll")]
-        public static extern int PostMessage(int h,int m,int w,int l);
+        public static extern int PostMessage(int h, int m, int w, int l);
         private void standby_Click(object sender, RoutedEventArgs e)
         {
             PostMessage(-1, 0x0112, 0xF170, 2);
@@ -220,5 +206,5 @@ namespace StartScreen
             proc.Start();
         }
     }
-    
+
 }

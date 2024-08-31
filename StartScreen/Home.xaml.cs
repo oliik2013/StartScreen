@@ -66,11 +66,14 @@ namespace StartScreen
                 Tile tile;
                 if (data.name == "startScreen[specialTiles(desktop)];")
                 {
+                    var bck = new ImageBrush(Utils.BitmapFromUri(new Uri(Utils.getWallpaperPath())));
+                    bck.Stretch = Stretch.UniformToFill;
                     tile = new Tile
                     {
                         Content = "Desktop",
                         HorizontalContentAlignment = HorizontalAlignment.Left,
                         VerticalContentAlignment = VerticalAlignment.Bottom,
+                        Background = bck
                     };
                     TileList.Items.Add(tile);
                     tile.Click += hideDesktopTile_Click;

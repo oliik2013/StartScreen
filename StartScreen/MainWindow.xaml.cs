@@ -33,9 +33,11 @@ namespace StartScreen
         [DllImport("user32.dll", CharSet = CharSet.Auto)]
         public static extern IntPtr SendMessage(IntPtr hWnd, uint Msg, uint wParam, uint lParam);
 
-        public DispatcherTimer counter2 = new DispatcherTimer();
-        DispatcherTimer counter = new DispatcherTimer();
-        bool initialized = false;
+        public DispatcherTimer counter2 = new();
+        DispatcherTimer counter = new();
+
+        /// Is the window initialized?
+        private bool initialized = false;
 
         /// <summary>
         /// Sets whether to use the user desktop wallpaper or not
@@ -49,30 +51,40 @@ namespace StartScreen
         public MainWindow()
         {
             alreadyShowing = true;
+            
             InitializeComponent();
             Logger.info("Object initialized!");
+
             Instance = this;
-            Logger.info("Instance has been set to \"This\"!");
-            this.Opacity = 0;
+            Logger.info("Instance is set to \"This\"!");
+
+            Opacity = 0;
             Logger.info("Opacity has been set to 0");
+            
             Topmost = true;
             Logger.info("Window has been set to Top-Most");
-            this.ShowInTaskbar = false;
+            
+            ShowInTaskbar = false;
             Logger.info("Successfully hidden from taskbar");
+            
             if (!initialized)
             {
                 counter.Tick += new EventHandler(windowAnim);
                 counter.Interval = new TimeSpan(0, 0, 0, 0, 2);
                 counter.Start();
                 Logger.info("windowAnim timer has initialized and started");
+                
                 DispatcherTimer checkLauncher = new DispatcherTimer();
+                
                 checkLauncher.Tick += new EventHandler(launcherTick);
                 checkLauncher.Interval = new TimeSpan(0, 0, 0, 0, 1);
                 checkLauncher.Start();
                 Logger.info("Launcher Checker has been started");
+                
                 Loaded += MainWindow_Loaded;
                 homeScreen = new Home();
                 content.Navigate(homeScreen, new EntranceNavigationTransitionInfo());
+                
                 new Thread(() =>
                 {
                     if (userBackgroundEnabled)
@@ -85,37 +97,39 @@ namespace StartScreen
                     }
 
                 }).Start();
-                imageBackground.Opacity = 0.5;
+
+                imageBackground.Stretch = Stretch.UniformToFill;
                 Logger.info("Background Opacity has been set to 1");
-                //imageBackground.Effect = new BlurEffect { Radius = 24, RenderingBias = RenderingBias.Performance };
-                Logger.info("Background Blur effect has been added");
+
                 counter2.Tick += new EventHandler(MainWindow.Instance.windowAnim2);
                 counter2.Interval = new TimeSpan(0, 0, 0, 0, 2);
-                var FOLDERID_AppsFolder = new Guid("{1e87508d-89c2-42f0-8a7e-645a0f50ca58}");
-                ShellObject appsFolder = (ShellObject)KnownFolderHelper.FromKnownFolderId(FOLDERID_AppsFolder);
+                ShellObject appsFolder = (ShellObject)KnownFolderHelper.FromKnownFolderId(new Guid("{1e87508d-89c2-42f0-8a7e-645a0f50ca58}"));
                 Logger.info("Listing All Apps");
                 foreach (var app in (IKnownFolder)appsFolder)
                 {
-
-
                     Logger.info("Name : " + app.Name + " | ID : " + app.ParsingName);
+
                     // The friendly app name
                     string name = app.Name;
+                    
                     // The ParsingName property is the AppUserModelID
                     string appUserModelID = app.ParsingName; // or app.Properties.System.AppUserModel.ID
                                                              // You can even get the Jumbo icon in one shot
                     BitmapSource icon = app.Thumbnail.SmallBitmapSource;
                     //appList.SortDescriptions.Add(new System.ComponentModel.SortDescription("NAME", System.ComponentModel.ListSortDirection.Ascending));
+
                     appList.Add(new AppsIcons
                     {
                         Icon = icon,
                         Name = name + "[" + appUserModelID
                     });
+
                     appListNameFriendly.Add(new AppsIcons
                     {
                         Icon = icon,
                         Name = name
                     });
+
                     Logger.info("Added Successfully");
                 }
                 initialized = true;

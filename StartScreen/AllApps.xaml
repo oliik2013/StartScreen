@@ -7,34 +7,16 @@
       mc:Ignorable="d" 
       d:DesignHeight="768" d:DesignWidth="1280"
       Title="AllApps">
+    <!--<Page.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="Assets/Styles.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </Page.Resources>-->
     <Grid>
         <Button HorizontalAlignment="Left" Margin="74,0,0,74" VerticalAlignment="Bottom" Content=""
-                Height="64" Width="64" Click="Button_Click" BorderThickness="0,0,0,0"
-                FontFamily="Segoe MDL2 Assets" FontSize="24"
-                HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Background="{x:Null}">
-            <!--<Canvas HorizontalAlignment="Center" VerticalAlignment="Center">
-                <Image Source="/Assets/Dark/basecircle.png" RenderTransformOrigin="0.5,0.5" HorizontalAlignment="Center" Canvas.Top="-38" VerticalAlignment="Top" Canvas.Left="-38">
-                    <Image.RenderTransform>
-                        <TransformGroup>
-                            <ScaleTransform ScaleX="0.5" ScaleY="0.5"/>
-                            <SkewTransform/>
-                            <RotateTransform/>
-                            <TranslateTransform/>
-                        </TransformGroup>
-                    </Image.RenderTransform>
-                </Image>
-                <Image Source="/Assets/Dark/back.png" RenderTransformOrigin="0.5,0.5" HorizontalAlignment="Center" Canvas.Top="-38" VerticalAlignment="Top" Canvas.Left="-38">
-                    <Image.RenderTransform>
-                        <TransformGroup>
-                            <ScaleTransform ScaleX="0.5" ScaleY="0.5"/>
-                            <SkewTransform/>
-                            <RotateTransform Angle="89.5"/>
-                            <TranslateTransform/>
-                        </TransformGroup>
-                    </Image.RenderTransform>
-                </Image>
-            </Canvas>-->
-        </Button>
+                Height="36" Width="36" Click="Button_Click" x:Name="GoUp_Button"/>
 
         <Label Content="Apps" HorizontalAlignment="Left" Margin="74,33,0,0"
                VerticalAlignment="Top" FontSize="64" Foreground="White" FontFamily="Segoe WP Light"/>
@@ -51,7 +33,7 @@
         </Label>-->
 
         <ComboBox Margin="230,86,0,0" Background="{x:Null}"
-                  BorderBrush="#00000000" Width="140" x:Name="SortOpts">
+                  BorderBrush="#00000000" Width="140" x:Name="SortOpts" Foreground="White">
             <ComboBoxItem Content="by Alphabet" Selected="ComboBoxItem_Selected"/>
             <ComboBoxItem Content="by Zphabet" Selected="ComboBoxItem_Selected_1"/>
             <ComboBoxItem Content="by Categories" Selected="ComboBoxItem_Selected_2"/>
@@ -61,8 +43,8 @@
 
         <ListBox x:Name="listBox" Background="Transparent" PreviewKeyDown="listBox_PreviewKeyDown"
                  PreviewKeyUp="listBox_PreviewKeyUp" SelectionChanged="listBox_SelectionChanged"
-                 Margin="74,164,25,162"
-                 ScrollViewer.HorizontalScrollBarVisibility="Auto" ScrollViewer.VerticalScrollBarVisibility="Auto">
+                 Margin="74,164,25,162" ScrollViewer.HorizontalScrollBarVisibility="Auto"
+                 ScrollViewer.VerticalScrollBarVisibility="Auto">
 
             <ListBox.ItemsPanel>
                 <ItemsPanelTemplate>
@@ -72,13 +54,15 @@
 
             <ListBox.ItemTemplate>
                 <DataTemplate>
-                    <StackPanel Orientation="Horizontal" Width="216" Height="54">
+                    <!--Orientation="Horizontal"-->
+                    <StackPanel Width="216" Height="54">
                         <Image Source="{Binding Path=Icon}" Width="48" Height="48" Stretch="UniformToFill" HorizontalAlignment="Left"/>
                         <Separator Width="20" Visibility="Hidden" Opacity="0"/>
-                        <TextBlock Text="{Binding Path=Name}" HorizontalAlignment="Center" VerticalAlignment="Top" TextWrapping="WrapWithOverflow"/>
+                        <TextBlock Text="{Binding Path=Name}" HorizontalAlignment="Center" VerticalAlignment="Top" TextWrapping="WrapWithOverflow" Foreground="White"/>
                         <StackPanel.ContextMenu>
                             <ContextMenu>
-                                <MenuItem Header="Pin to Start"/>
+                                <MenuItem Header="(Un)Pin to Start"/>
+                                <MenuItem Header="Repair and Uninstall"/>
                             </ContextMenu>
                         </StackPanel.ContextMenu>
                     </StackPanel>

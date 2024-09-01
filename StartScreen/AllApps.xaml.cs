@@ -35,9 +35,9 @@ namespace StartScreen
             InitializeComponent();
             listBox.Loaded += ListBox_Loaded;
             listBox.Unloaded += ListBox_Unloaded;
-            listBox.Items.SortDescriptions.Add(new SortDescription("Name", ListSortDirection.Ascending));
-            listBox.Items.SortDescriptions.Add(new SortDescription("Name-ztoa", ListSortDirection.Descending));
-            sortByAlphabet();
+            //sortByAlphabet();
+
+            GoUp_Button.Style = StartScreen.Assets.Styles.circleButtonStyle;
         }
 
         private void ListBox_Unloaded(object sender, RoutedEventArgs e)
@@ -47,7 +47,16 @@ namespace StartScreen
 
         private void ListBox_Loaded(object sender, RoutedEventArgs e)
         {
-
+            listBox.Items.SortDescriptions.Add(new SortDescription("Name", ListSortDirection.Ascending));
+            listBox.Items.SortDescriptions.Add(new SortDescription("Name-ztoa", ListSortDirection.Descending));
+            listBox.ItemsSource = MainWindow.Instance.appListNameFriendly;
+            Logger.info(listBox.ToString());
+            foreach (AppsIcons obj in MainWindow.Instance.appList)
+            {
+                Logger.info("Adding " + obj.Name + " to tag list");
+                appTag.Add(obj.Name);
+            }
+            Logger.info("[AllApps] Menu Executed!");
         }
 
         private void Button_Click(object sender, RoutedEventArgs e)
@@ -63,7 +72,7 @@ namespace StartScreen
             foreach (String obj in appTag)
             {
                 String[] temp = obj.Split('[');
-                AppsIcons temp2 = listBox.SelectedItem as AppsIcons;
+                AppsIcons temp2 = (sender as ListBox).SelectedItem as AppsIcons;
                 if (temp[0].Equals(temp2.Name))
                 {
                     Logger.info("Starting selected app");
@@ -90,13 +99,8 @@ namespace StartScreen
 
         private void sortByAlphabet()
         {
+            listBox.Items.Clear();
             listBox.ItemsSource = MainWindow.Instance.appListNameFriendly;
-            foreach (AppsIcons obj in MainWindow.Instance.appList)
-            {
-                Logger.info("Adding " + obj.Name + " to tag list");
-                appTag.Add(obj.Name);
-            }
-            Logger.info("[AllApps] Menu Executed!");
         }
 
         // by alphabet
@@ -109,15 +113,10 @@ namespace StartScreen
         {
             var newl = MainWindow.Instance.appListNameFriendly;
             newl.Reverse();
+            listBox.Items.Clear();
             listBox.ItemsSource = newl;
             listBox.Items.Refresh();
             UpdateLayout();
-            //foreach (AppsIcons obj in MainWindow.Instance.appList)
-            //{
-            //    Logger.info("Adding " + obj.Name + " to tag list");
-            //    appTag.Add(obj.Name);
-            //}
-            //Logger.info("[AllApps] Menu Executed!");
         }
 
         // by zphabet

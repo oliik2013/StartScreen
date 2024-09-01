@@ -31,11 +31,8 @@ namespace StartScreen
     /// </summary>
     public partial class Home : Page
     {
-        //public List<Button> Tiles = new List<Button>();
         public static Home Instance;
-        //public List<tileData> tiles = new List<tileData>();
         TileBackend tile = new TileBackend();
-        //public static Button desktopTile;
 
         public Home()
         {
@@ -47,6 +44,8 @@ namespace StartScreen
 
             // User avatar
             profilePicture.Fill = new ImageBrush(Utils.GetUserimage());
+
+            AllApps_Button.Style = Assets.Styles.circleButtonStyle;
 
             beginTilesInit();
             MainWindow.Instance.counter2.Tick += new EventHandler(MainWindow.Instance.windowAnim2);
@@ -64,16 +63,27 @@ namespace StartScreen
             {
                 Logger.info("Adding " + data.name + " to tile list");
                 Tile tile;
+                Style tileStyle = data.Size switch
+                {
+                    TileBackend.tileSize.rsmall => Assets.Styles.SmallerTileStyle,
+                    TileBackend.tileSize.small => Assets.Styles.SmallTileStyle,
+                    TileBackend.tileSize.wide => Assets.Styles.WideTileStyle,
+                    TileBackend.tileSize.large => Assets.Styles.LargeTileStyle
+                };
+
                 if (data.name == "startScreen[specialTiles(desktop)];")
                 {
-                    var bck = new ImageBrush(Utils.BitmapFromUri(new Uri(Utils.getWallpaperPath())));
-                    bck.Stretch = Stretch.UniformToFill;
+                    var bck = new ImageBrush(Utils.BitmapFromUri(new Uri(Utils.getWallpaperPath())))
+                    {
+                        Stretch = Stretch.UniformToFill
+                    };
                     tile = new Tile
                     {
                         Content = "Desktop",
                         HorizontalContentAlignment = HorizontalAlignment.Left,
                         VerticalContentAlignment = VerticalAlignment.Bottom,
-                        Background = bck
+                        Background = bck,
+                        Style = tileStyle
                     };
                     TileList.Items.Add(tile);
                     tile.Click += hideDesktopTile_Click;
@@ -84,7 +94,8 @@ namespace StartScreen
                     {
                         Content = data.name,
                         HorizontalContentAlignment = HorizontalAlignment.Left,
-                        VerticalContentAlignment = VerticalAlignment.Bottom
+                        VerticalContentAlignment = VerticalAlignment.Bottom,
+                        Style = tileStyle
                     };
                     TileList.Items.Add(tile);
                     tile.Click += Tile_Click;

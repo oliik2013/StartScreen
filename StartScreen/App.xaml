@@ -3,6 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:local="clr-namespace:StartScreen"
              StartupUri="MainWindow.xaml"
+             xmlns:mah="http://metro.mahapps.com/winfx/xaml/controls"
              xmlns:ui="http://schemas.modernwpf.com/2019">
     <Application.Resources>
         <ResourceDictionary>

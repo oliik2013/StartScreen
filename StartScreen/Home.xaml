@@ -8,57 +8,18 @@
       mc:Ignorable="d" 
       d:DesignHeight="768" d:DesignWidth="1280"
       Title="Home">
-    <Page.Resources>
-        <Style x:Key="tileButton" TargetType="{x:Type Button}">
-            <Setter Property="SnapsToDevicePixels" Value="True" />
-
-            <Setter Property="Template">
-                <Setter.Value>
-                    <ControlTemplate TargetType="{x:Type Button}">
-                        <Border CornerRadius="4" Background="{TemplateBinding Background}">
-                            <Grid>
-                                <ContentPresenter x:Name="MyContentPresenter" Content="{TemplateBinding Content}" HorizontalAlignment="Left" VerticalAlignment="Bottom" Margin="10,0,0,5" />
-                            </Grid>
-                        </Border>
-                        <ControlTemplate.Triggers>
-                            <Trigger Property="IsMouseOver" Value="True">
-                                <Setter Property="Opacity" Value="0.7"/>
-                            </Trigger>
-                            <Trigger Property="IsPressed" Value="True">
-                                <Setter Property="RenderTransform">
-                                    <Setter.Value>
-                                        <ScaleTransform CenterX="0.5" CenterY="0.5" ScaleX="0.98" ScaleY="0.98" />
-                                    </Setter.Value>
-                                </Setter>
-                            </Trigger>
-                        </ControlTemplate.Triggers>
-                    </ControlTemplate>
-                </Setter.Value>
-            </Setter>
-        </Style>
-
-        <Style x:Key="LargeTileStyle" TargetType="mah:Tile" x:Name="LargeTileStyle">
-            <Setter Property="Height" Value="125" />
-            <Setter Property="TextOptions.TextFormattingMode" Value="Display" />
-            <Setter Property="TextOptions.TextRenderingMode" Value="ClearType" />
-            <Setter Property="TitleFontSize" Value="14" />
-            <Setter Property="Width" Value="300" />
-        </Style>
-
-        <Style x:Key="SmallTileStyle" TargetType="mah:Tile" x:Name="SmallTileStyle">
-            <Setter Property="Height" Value="125" />
-            <Setter Property="TextOptions.TextFormattingMode" Value="Ideal" />
-            <Setter Property="TextOptions.TextRenderingMode" Value="ClearType" />
-            <Setter Property="TitleFontSize" Value="10" />
-            <Setter Property="Width" Value="147" />
-        </Style>
-        
-    </Page.Resources>
+    <!--<Page.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="/Assets/Styles.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </Page.Resources>-->
 
     <Grid x:Name="contentGrid">
         <Label Content="Start" HorizontalAlignment="Left" Margin="74,33,0,0"
                VerticalAlignment="Top" FontSize="64" Foreground="White" FontFamily="Segoe WP Light"/>
-        <Button x:Name="powerAction" Width="50" Height="50" Content="&#xE7E8;" Background="Transparent" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0,54,50,0" FontFamily="Segoe MDL2 Assets" FontSize="24" Click="powerAction_Click">
+        <Button x:Name="powerAction" Width="50" Height="50" Content="&#xE7E8;" Background="Transparent" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0,54,50,0" FontFamily="Segoe MDL2 Assets" FontSize="24" Click="powerAction_Click" Foreground="White">
             <Button.ContextMenu>
                 <ContextMenu>
                     <MenuItem Header="Shutdown" Click="powerOff_Click"/>
@@ -79,9 +40,9 @@
                 <Label x:Name="username" Content="username" HorizontalAlignment="Left" Margin="0,0,47,0" VerticalAlignment="Stretch" FontSize="24" Foreground="White" FontFamily="Segoe UI"/>
             </Grid>
         </Button>
-        
+
         <Button Content="&#xE74B;" HorizontalAlignment="Left" Margin="74,0,0,74" VerticalAlignment="Bottom"
-                Height="48" Width="65" FontFamily="Segoe MDL2 Assets" FontSize="24" Click="AllApps_Click" BorderThickness="0,0,0,0"/>
+                Click="AllApps_Click" x:Name="AllApps_Button"/>
 
         <ListBox x:Name="TileList" Background="Transparent" Margin="74,164,0,144"
                  ScrollViewer.HorizontalScrollBarVisibility="Visible" ScrollViewer.VerticalScrollBarVisibility="Hidden">

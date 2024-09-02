@@ -14,6 +14,5 @@ namespace StartScreen
     
     public partial class App : Application
     {
-        public static Utils utility = new Utils();
     }
 }

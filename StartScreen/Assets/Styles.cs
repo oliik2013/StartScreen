@@ -31,7 +31,7 @@ namespace StartScreen.Assets
             var ellipseItem = new FrameworkElementFactory(typeof(Ellipse));
             ellipseItem.SetValue(Ellipse.FillProperty, new SolidColorBrush(Colors.Transparent));
             ellipseItem.SetValue(Ellipse.StrokeProperty, new SolidColorBrush(Colors.White));
-            ellipseItem.SetValue(Ellipse.StrokeThicknessProperty, 4.0);
+            ellipseItem.SetValue(Ellipse.StrokeThicknessProperty, 3.0);
 
             var contentPresenter = new FrameworkElementFactory(typeof(ContentPresenter));
             contentPresenter.SetValue(ContentPresenter.HorizontalAlignmentProperty, HorizontalAlignment.Center);
@@ -65,6 +65,15 @@ namespace StartScreen.Assets
             mouseEvtTrigger.Setters.Add(new Setter(Button.BackgroundProperty, new SolidColorBrush(Colors.DimGray)));
             result.Triggers.Add(mouseEvtTrigger);
 
+            var mouseClickEvtTrigger = new Trigger()
+            {
+                Property = Button.IsPressedProperty,
+                Value = true
+            };
+            mouseClickEvtTrigger.Setters.Add(new Setter(Button.BackgroundProperty, new SolidColorBrush(Colors.White)));
+            mouseClickEvtTrigger.Setters.Add(new Setter(Button.ForegroundProperty, new SolidColorBrush(Colors.Black)));
+            result.Triggers.Add(mouseClickEvtTrigger);
+
             return result;
         }
 
@@ -78,6 +87,8 @@ namespace StartScreen.Assets
             result.Setters.Add(new Setter(Tile.TitleFontSizeProperty, 14.0));
             result.Setters.Add(new Setter(Tile.WidthProperty, NormalTile * 2));
             result.Setters.Add(new Setter(Tile.ForegroundProperty, new SolidColorBrush(Colors.White)));
+            result.Setters.Add(new Setter(Tile.BorderThicknessProperty, new Thickness(0, 0, 0, 0)));
+            result.Setters.Add(new Setter(Tile.BorderBrushProperty, new SolidColorBrush(Colors.Transparent)));
 
             var mouseEvtTrigger = new Trigger()
             {
@@ -101,6 +112,8 @@ namespace StartScreen.Assets
             result.Setters.Add(new Setter(Tile.TitleFontSizeProperty, 10.0));
             result.Setters.Add(new Setter(Tile.WidthProperty, NormalTile));
             result.Setters.Add(new Setter(Tile.ForegroundProperty, new SolidColorBrush(Colors.White)));
+            result.Setters.Add(new Setter(Tile.BorderThicknessProperty, new Thickness(0, 0, 0, 0)));
+            result.Setters.Add(new Setter(Tile.BorderBrushProperty, new SolidColorBrush(Colors.Transparent)));
             //result.Setters.Add(new Setter(Tile.PaddingProperty, new Padding))
 
             var mouseEvtTrigger = new Trigger()
@@ -125,6 +138,8 @@ namespace StartScreen.Assets
             result.Setters.Add(new Setter(Tile.TitleFontSizeProperty, 7.0));
             result.Setters.Add(new Setter(Tile.WidthProperty, NormalTile / 2));
             result.Setters.Add(new Setter(Tile.ForegroundProperty, new SolidColorBrush(Colors.White)));
+            result.Setters.Add(new Setter(Tile.BorderThicknessProperty, new Thickness(0, 0, 0, 0)));
+            result.Setters.Add(new Setter(Tile.BorderBrushProperty, new SolidColorBrush(Colors.Transparent)));
 
             var mouseEvtTrigger = new Trigger()
             {
@@ -148,6 +163,8 @@ namespace StartScreen.Assets
             result.Setters.Add(new Setter(Tile.TitleFontSizeProperty, 10.0));
             result.Setters.Add(new Setter(Tile.WidthProperty, NormalTile * 2));
             result.Setters.Add(new Setter(Tile.ForegroundProperty, new SolidColorBrush(Colors.White)));
+            result.Setters.Add(new Setter(Tile.BorderThicknessProperty, new Thickness(0, 0, 0, 0)));
+            result.Setters.Add(new Setter(Tile.BorderBrushProperty, new SolidColorBrush(Colors.Transparent)));
 
             var mouseEvtTrigger = new Trigger()
             {

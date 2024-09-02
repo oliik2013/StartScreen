@@ -4,22 +4,18 @@
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
       xmlns:local="clr-namespace:StartScreen"
-      xmlns:mah="http://metro.mahapps.com/winfx/xaml/controls" x:Class="StartScreen.Home"
+      xmlns:mah="http://metro.mahapps.com/winfx/xaml/controls" xmlns:controls="clr-namespace:ModernWpf.Controls;assembly=ModernWpf" xmlns:system="http://schemas.microsoft.com/winfx/2009/xaml" x:Class="StartScreen.Home"
       mc:Ignorable="d" 
       d:DesignHeight="768" d:DesignWidth="1280"
       Title="Home">
-    <!--<Page.Resources>
-        <ResourceDictionary>
-            <ResourceDictionary.MergedDictionaries>
-                <ResourceDictionary Source="/Assets/Styles.xaml"/>
-            </ResourceDictionary.MergedDictionaries>
-        </ResourceDictionary>
-    </Page.Resources>-->
 
     <Grid x:Name="contentGrid">
-        <Label Content="Start" HorizontalAlignment="Left" Margin="74,33,0,0"
+        <Label Content="Start" HorizontalAlignment="Left" Margin="74,33,30,40"
                VerticalAlignment="Top" FontSize="64" Foreground="White" FontFamily="Segoe WP Light"/>
-        <Button x:Name="powerAction" Width="50" Height="50" Content="&#xE7E8;" Background="Transparent" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0,54,50,0" FontFamily="Segoe MDL2 Assets" FontSize="24" Click="powerAction_Click" Foreground="White">
+        
+        <Button x:Name="powerAction" Width="50" Height="50" Content="&#xE7E8;" Background="Transparent"
+                HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0,54,50,0" FontFamily="Segoe MDL2 Assets"
+                FontSize="24" Click="powerAction_Click" Foreground="White">
             <Button.ContextMenu>
                 <ContextMenu>
                     <MenuItem Header="Shutdown" Click="powerOff_Click"/>
@@ -37,20 +33,42 @@
                         <ImageBrush/>
                     </Ellipse.Fill>
                 </Ellipse>
-                <Label x:Name="username" Content="username" HorizontalAlignment="Left" Margin="0,0,47,0" VerticalAlignment="Stretch" FontSize="24" Foreground="White" FontFamily="Segoe UI"/>
+                <Label x:Name="username" Content="username" HorizontalAlignment="Right" Margin="0,0,47,0" VerticalAlignment="Stretch" FontSize="20" Foreground="White" FontFamily="Segoe UI" HorizontalContentAlignment="Right"/>
             </Grid>
         </Button>
 
-        <Button Content="&#xE74B;" HorizontalAlignment="Left" Margin="74,0,0,74" VerticalAlignment="Bottom"
-                Click="AllApps_Click" x:Name="AllApps_Button"/>
+        <Button HorizontalAlignment="Left" Margin="74,0,0,74" VerticalAlignment="Bottom"
+                Click="AllApps_Click" x:Name="AllApps_Button">
+            <controls:PathIcon
+                Data="F1 M 17.4126,18L 24.0752,11L 17.6558,11L 8.77931,20.4678L 8.77931,20.5322L 17.6558,30L 24.0752,30L 17.4126,23L 32,23L 32,18L 17.4126,18 Z "
+                Width="14" Height="14" RenderTransformOrigin="0.5,0.5" Foreground="White">
+                <controls:PathIcon.RenderTransform>
+                    <TransformGroup>
+                        <ScaleTransform/>
+                        <SkewTransform/>
+                        <RotateTransform Angle="-90"/>
+                        <TranslateTransform/>
+                    </TransformGroup>
+                </controls:PathIcon.RenderTransform>
+            </controls:PathIcon>
+        </Button>
 
-        <ListBox x:Name="TileList" Background="Transparent" Margin="74,164,0,144"
-                 ScrollViewer.HorizontalScrollBarVisibility="Visible" ScrollViewer.VerticalScrollBarVisibility="Hidden">
+        <ListBox Background="Transparent" Margin="74,164,0,144"
+                 ScrollViewer.HorizontalScrollBarVisibility="Visible"
+                 ScrollViewer.VerticalScrollBarVisibility="Hidden"
+                 x:Name="GroupList">
+
             <ListBox.ItemsPanel>
                 <ItemsPanelTemplate>
                     <WrapPanel Orientation="Horizontal"/>
                 </ItemsPanelTemplate>
             </ListBox.ItemsPanel>
+
+            <ListBox.Resources>
+                <Style TargetType="ListBoxItem">
+                    <Setter Property="Background" Value="Transparent"/>
+                </Style>
+            </ListBox.Resources>
         </ListBox>
     </Grid>
 </Page>

@@ -1,28 +1,12 @@
-﻿using ModernWpf.Media.Animation;
+﻿using MahApps.Metro.Controls;
+using ModernWpf.Media.Animation;
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Diagnostics.Metrics;
-using System.Drawing;
-using System.IO;
-using System.Linq;
 using System.Runtime.InteropServices;
-using System.Security.Policy;
-using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Media.Effects;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
-using MahApps.Metro;
-using MahApps.Metro.Controls;
 
 namespace StartScreen
 {
@@ -38,9 +22,11 @@ namespace StartScreen
         {
             Instance = this;
             InitializeComponent();
-            
+
+            tile.initDefaultTiles();
+
             // User name
-            username.Content = Environment.UserName;
+            username.Content = $"{Environment.UserName}\n{Environment.UserDomainName}";
 
             // User avatar
             profilePicture.Fill = new ImageBrush(Utils.GetUserimage());
@@ -48,85 +34,22 @@ namespace StartScreen
             AllApps_Button.Style = Assets.Styles.circleButtonStyle;
 
             beginTilesInit();
-            MainWindow.Instance.counter2.Tick += new EventHandler(MainWindow.Instance.windowAnim2);
-            MainWindow.Instance.counter2.Interval = new TimeSpan(0, 0, 0, 0, 2);
+            //MainWindow.Instance.counter2.Tick += new EventHandler(MainWindow.Instance.windowAnim2);
+            //MainWindow.Instance.counter2.Interval = new TimeSpan(0, 0, 0, 0, 2);
         }
 
         public void beginTilesInit()
         {
             Logger.info("Initializing Tiles");
-            tile.initDefaultTiles();
-            
-            TileList.Items.Clear();
-            
-            foreach (TileBackend.tileData data in tile.data)
-            {
-                Logger.info("Adding " + data.name + " to tile list");
-                Tile tile;
-                Style tileStyle = data.Size switch
-                {
-                    TileBackend.tileSize.rsmall => Assets.Styles.SmallerTileStyle,
-                    TileBackend.tileSize.small => Assets.Styles.SmallTileStyle,
-                    TileBackend.tileSize.wide => Assets.Styles.WideTileStyle,
-                    TileBackend.tileSize.large => Assets.Styles.LargeTileStyle
-                };
 
-                if (data.name == "startScreen[specialTiles(desktop)];")
-                {
-                    var bck = new ImageBrush(Utils.BitmapFromUri(new Uri(Utils.getWallpaperPath())))
-                    {
-                        Stretch = Stretch.UniformToFill
-                    };
-                    tile = new Tile
-                    {
-                        Content = "Desktop",
-                        HorizontalContentAlignment = HorizontalAlignment.Left,
-                        VerticalContentAlignment = VerticalAlignment.Bottom,
-                        Background = bck,
-                        Style = tileStyle
-                    };
-                    TileList.Items.Add(tile);
-                    tile.Click += hideDesktopTile_Click;
-                }
-                else
-                {
-                    tile = new Tile
-                    {
-                        Content = data.name,
-                        HorizontalContentAlignment = HorizontalAlignment.Left,
-                        VerticalContentAlignment = VerticalAlignment.Bottom,
-                        Style = tileStyle
-                    };
-                    TileList.Items.Add(tile);
-                    tile.Click += Tile_Click;
-                }
+            foreach (var pair in tile.data)
+            {
+                GroupList.Items.Add(new StartGroup(pair.Key, pair.Value));
             }
         }
 
         private void Tile_Click(object sender, RoutedEventArgs e)
         {
-            foreach (TileBackend.tileData data in tile.data)
-            {
-                if (sender is Tile)
-                {
-                    if ((sender as Tile).Content == data.name)
-                    {
-                        Logger.info("Executing " + data.programPath);
-                        try
-                        {
-                            Process process = new Process();
-                            process.StartInfo.UseShellExecute = true;
-                            process.StartInfo.FileName = data.programPath;
-                            process.Start();
-                        }
-                        catch (Exception ex)
-                        {
-                            Logger.info("An error occurred while trying to run " + data.programPath);
-                            Logger.info(ex.ToString());
-                        }
-                    }
-                }
-            }
         }
 
         private void hideDesktopTile_Click(object sender, RoutedEventArgs e)
@@ -158,27 +81,13 @@ namespace StartScreen
             MainWindow.Instance.content.Navigate(MainWindow.Instance.allApps, new EntranceNavigationTransitionInfo());
         }
 
-        private void Create_OnClick(object sender, RoutedEventArgs e)
-        {
-
-        }
-        private void Search_OnClick(object sender, RoutedEventArgs e)
-        {
-
-        }
-        private void Exit_OnClick(object sender, RoutedEventArgs e)
-        {
-
-        }
-
         private void userButton_Click(object sender, RoutedEventArgs e)
         {
-            var psi = new ProcessStartInfo
+            Process.Start(new ProcessStartInfo
             {
                 FileName = "ms-settings:yourinfo",
                 UseShellExecute = true
-            };
-            Process.Start(psi);
+            });
         }
 
         private void powerAction_Click(object sender, RoutedEventArgs e)
@@ -218,6 +127,41 @@ namespace StartScreen
             proc.StartInfo.UseShellExecute = true;
             proc.StartInfo.Verb = "runas";
             proc.Start();
+        }
+
+        private void Unpin_Click(object sender, RoutedEventArgs e)
+        {
+            
+        }
+
+        private void Run_As_Admin_Click(object sender, RoutedEventArgs e)
+        {
+            //ExecuteAsAdmin(
+            //    tile.data.First(
+            //        (item) => item.name == (TileList.SelectedItem as Tile).Content
+            //    ).programPath,
+            //    ""
+            //);
+        }
+
+        private void Resize_Large(object sender, RoutedEventArgs e)
+        {
+            //(TileList.SelectedItem as Tile).Style = Assets.Styles.LargeTileStyle;
+        }
+
+        private void Resize_Wide(object sender, RoutedEventArgs e)
+        {
+            //(TileList.SelectedItem as Tile).Style = Assets.Styles.WideTileStyle;
+        }
+
+        private void Resize_Small(object sender, RoutedEventArgs e)
+        {
+            //(TileList.SelectedItem as Tile).Style = Assets.Styles.SmallerTileStyle;
+        }
+
+        private void Resize_Normal(object sender, RoutedEventArgs e)
+        {
+            //(TileList.SelectedItem as Tile).Style = Assets.Styles.SmallTileStyle;
         }
     }
 

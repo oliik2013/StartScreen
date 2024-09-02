@@ -28,79 +28,32 @@ namespace StartScreen
     /// </summary>
     public partial class AllApps : Page
     {
-        List<string> appTag = new List<string>();
-
         public AllApps()
         {
             InitializeComponent();
-            listBox.Loaded += ListBox_Loaded;
-            listBox.Unloaded += ListBox_Unloaded;
-            //sortByAlphabet();
-
-            GoUp_Button.Style = StartScreen.Assets.Styles.circleButtonStyle;
-        }
-
-        private void ListBox_Unloaded(object sender, RoutedEventArgs e)
-        {
-
-        }
-
-        private void ListBox_Loaded(object sender, RoutedEventArgs e)
-        {
-            listBox.Items.SortDescriptions.Add(new SortDescription("Name", ListSortDirection.Ascending));
-            listBox.Items.SortDescriptions.Add(new SortDescription("Name-ztoa", ListSortDirection.Descending));
             listBox.ItemsSource = MainWindow.Instance.appListNameFriendly;
-            Logger.info(listBox.ToString());
-            foreach (AppsIcons obj in MainWindow.Instance.appList)
-            {
-                Logger.info("Adding " + obj.Name + " to tag list");
-                appTag.Add(obj.Name);
-            }
-            Logger.info("[AllApps] Menu Executed!");
+            listBox.SelectedIndex = 0;
+
+            GoUp_Button.Style = Assets.Styles.circleButtonStyle;
         }
 
         private void Button_Click(object sender, RoutedEventArgs e)
         {
 
             MainWindow.Instance.content.GoBack();
-            //MainWindow.Instance.imageBackground.Opacity = 1;
-            //MainWindow.Instance.imageBackground.Effect = new BlurEffect { Radius = 24, RenderingBias = RenderingBias.Performance };
         }
 
-        private void listBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        private void AppButton_Click(object sender, RoutedEventArgs e)
         {
-            foreach (String obj in appTag)
-            {
-                String[] temp = obj.Split('[');
-                AppsIcons temp2 = (sender as ListBox).SelectedItem as AppsIcons;
-                if (temp[0].Equals(temp2.Name))
-                {
-                    Logger.info("Starting selected app");
-                    Process.Start("explorer.exe", @" shell:appsFolder\" + temp[1]);
-                    Home.closeAppAnim();
-                }
-            }
-        }
-
-        private void listBox_Selected(object sender, RoutedEventArgs e)
-        {
-
-        }
-
-        private void listBox_PreviewKeyDown(object sender, KeyEventArgs e)
-        {
-            e.Handled = true;
-        }
-
-        private void listBox_PreviewKeyUp(object sender, KeyEventArgs e)
-        {
-            e.Handled = true;
+            Logger.info("Starting selected app");
+            var selectedItem = (sender as ListBox).SelectedItem as TileBackend.tileData;
+            Process.Start("explorer.exe", $@"shell:appsFolder\{selectedItem.name}");
+            Home.closeAppAnim();
         }
 
         private void sortByAlphabet()
         {
             listBox.Items.Clear();
-            listBox.ItemsSource = MainWindow.Instance.appListNameFriendly;
         }
 
         // by alphabet
@@ -114,9 +67,10 @@ namespace StartScreen
             var newl = MainWindow.Instance.appListNameFriendly;
             newl.Reverse();
             listBox.Items.Clear();
-            listBox.ItemsSource = newl;
-            listBox.Items.Refresh();
-            UpdateLayout();
+            foreach (var item in newl)
+            {
+                listBox.Items.Add(item);
+            }
         }
 
         // by zphabet
@@ -130,12 +84,14 @@ namespace StartScreen
         {
 
         }
+
+        private void Call_AppWiz(object sender, RoutedEventArgs e)
+        {
+            Process.Start("appwiz.cpl");
+            Environment.Exit(0);
+        }
     }
-    public class AppsIcons
-    {
-        public BitmapSource Icon { get; set; }
-        public string Name { get; set; }
-    }
+
     public enum SortGroup
     {
         Symbol = 0,

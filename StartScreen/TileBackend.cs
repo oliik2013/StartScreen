@@ -1,48 +1,78 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Media.Imaging;
 
 namespace StartScreen
 {
-    class TileBackend
+    public sealed class TileBackend
     {
-        public List<tileData> data = new List<tileData>();
+        public Dictionary<string, List<tileData>> data = new();
+
         public void saveTile()
         {
 
         }
+
         public void loadAllTiles()
         {
 
         }
+
         public void getTile(tileData tileData)
         {
-            foreach (var tile in data)
-            {
-                if (tile.name == tileData.name)
-                {
-                    // TODO: Do something when successfully got the specified tile
-                }
-            }
+        
         }
+
         public void initDefaultTiles()
         {
             Logger.info("Initializing Default Tiles");
-            data.Clear();
-            data.Add(new tileData { Size = tileSize.wide, name = "startScreen[specialTiles(desktop)];", programPath = "startScreen[hidefunc()];", tilePosX = 0, tilePosY = 0 });
-            data.Add(new tileData { Size = tileSize.wide, name = "Internet Explorer", programPath = "iexplore", tilePosX = 0, tilePosY = 1 });
+            data.Add(
+                "Default",
+                [
+                    new tileData
+                    {
+                        Size = tileSize.wide,
+                        name = "startScreen[specialTiles(desktop)];",
+                        programPath = "startScreen[hidefunc()];",
+                        tilePosX = 0, tilePosY = 0,
+                        group = "Default"
+                    },
+                ]
+            );
+            data.Add(
+                "Internet",
+                [
+                    new tileData
+                    {
+                        Size = tileSize.wide,
+                        name = "Internet Explorer",
+                        programPath = "iexplore",
+                        tilePosX = 0, tilePosY = 0,
+                        group = "Internet"
+                    }
+                ]
+            );
         }
 
         // Tile Data JSON Structure
         public class tileData
         {
             public tileSize Size { get; set; }
+            
             public string name { get; set; }
+            
             public string programPath { get; set; }
             public int tilePosX { get; set; }
+
             public int tilePosY { get; set; }
+
+            public string group { get; set; }
+
+            public BitmapSource appIcon { get; set; }
         }
         
         // Tile size struct

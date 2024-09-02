@@ -30,8 +30,8 @@ namespace StartScreen
     {
         public static MainWindow Instance;
 
-        [DllImport("user32.dll", CharSet = CharSet.Auto)]
-        public static extern IntPtr SendMessage(IntPtr hWnd, uint Msg, uint wParam, uint lParam);
+        //[DllImport("user32.dll", CharSet = CharSet.Auto)]
+        //public static extern IntPtr SendMessage(IntPtr hWnd, uint Msg, uint wParam, uint lParam);
 
         public DispatcherTimer counter2 = new();
         DispatcherTimer counter = new();
@@ -60,13 +60,18 @@ namespace StartScreen
 
             Opacity = 0;
             Logger.info("Opacity has been set to 0");
-            
+
+#if !DEBUG
             Topmost = true;
             Logger.info("Window has been set to Top-Most");
             
+#else   
+            Topmost = false;
+#endif
+
             ShowInTaskbar = false;
             Logger.info("Successfully hidden from taskbar");
-            
+
             if (!initialized)
             {
                 counter.Tick += new EventHandler(windowAnim);
@@ -74,14 +79,7 @@ namespace StartScreen
                 counter.Start();
                 Logger.info("windowAnim timer has initialized and started");
                 
-                DispatcherTimer checkLauncher = new DispatcherTimer();
-                
-                checkLauncher.Tick += new EventHandler(launcherTick);
-                checkLauncher.Interval = new TimeSpan(0, 0, 0, 0, 1);
-                checkLauncher.Start();
-                Logger.info("Launcher Checker has been started");
-                
-                Loaded += MainWindow_Loaded;
+                //Loaded += MainWindow_Loaded;
                 homeScreen = new Home();
                 content.Navigate(homeScreen, new EntranceNavigationTransitionInfo());
                 
@@ -99,35 +97,34 @@ namespace StartScreen
                 }).Start();
 
                 imageBackground.Stretch = Stretch.UniformToFill;
-                Logger.info("Background Opacity has been set to 1");
 
                 counter2.Tick += new EventHandler(MainWindow.Instance.windowAnim2);
-                counter2.Interval = new TimeSpan(0, 0, 0, 0, 2);
-                ShellObject appsFolder = (ShellObject)KnownFolderHelper.FromKnownFolderId(new Guid("{1e87508d-89c2-42f0-8a7e-645a0f50ca58}"));
+                counter2.Interval = new TimeSpan(0, 0, 0, 0, 1);
+                
                 Logger.info("Listing All Apps");
-                foreach (var app in (IKnownFolder)appsFolder)
-                {
-                    Logger.info("Name : " + app.Name + " | ID : " + app.ParsingName);
 
+                foreach (var app in KnownFolderHelper.FromKnownFolderId(new Guid("{1e87508d-89c2-42f0-8a7e-645a0f50ca58}")))
+                {
                     // The friendly app name
                     string name = app.Name;
                     
                     // The ParsingName property is the AppUserModelID
                     string appUserModelID = app.ParsingName; // or app.Properties.System.AppUserModel.ID
-                                                             // You can even get the Jumbo icon in one shot
-                    BitmapSource icon = app.Thumbnail.SmallBitmapSource;
-                    //appList.SortDescriptions.Add(new System.ComponentModel.SortDescription("NAME", System.ComponentModel.ListSortDirection.Ascending));
+                    
+                    Logger.info($"Name : {name} | ID : {appUserModelID}");
+                    
+                    BitmapSource icon = app.Thumbnail.BitmapSource;
 
-                    appList.Add(new AppsIcons
+                    appList.Add(new TileBackend.tileData
                     {
-                        Icon = icon,
-                        Name = name + "[" + appUserModelID
+                        appIcon = icon,
+                        name = name + "[" + appUserModelID
                     });
 
-                    appListNameFriendly.Add(new AppsIcons
+                    appListNameFriendly.Add(new TileBackend.tileData
                     {
-                        Icon = icon,
-                        Name = name
+                        appIcon = icon,
+                        name = name,
                     });
 
                     Logger.info("Added Successfully");
@@ -136,49 +133,10 @@ namespace StartScreen
                 allApps = new AllApps();
             }
         }
-        public List<AppsIcons> appList = new List<AppsIcons>();
-        public List<AppsIcons> appListNameFriendly = new List<AppsIcons>();
-        public bool alreadyShowing = false;
-        private void launcherTick(object? sender, EventArgs e)
-        {
-            Process[] pname = Process.GetProcessesByName("ScreenLaunch");
-            if (pname.Length >= 1)
-            {
-                if (alreadyShowing)
-                {
-                    Home.closeAppAnim();
-                    foreach (Process p in pname)
-                    {
-                        p.Kill();
-                    }
-                    return;
-                }
-                this.Opacity = 0;
-                this.Show();
-                if (content.CanGoBack)
-                    content.GoBack();
-                //Home.beginTilesInit();
-                counter.Start();
-                foreach (Process p in pname)
-                {
-                    p.Kill();
-                }
-                new Thread(() =>
-                {
-                    if (userBackgroundEnabled)
-                    {
-                        Logger.info("Getting user background");
-                        imageBackground.Dispatcher.Invoke(() =>
-                            imageBackground.Source = Utils.BitmapFromUri(new Uri(Utils.getWallpaperPath()))
-                        );
-                    }
+        public List<TileBackend.tileData> appList = new();
+        public List<TileBackend.tileData> appListNameFriendly = new();
 
-                }).Start();
-                homeScreen.beginTilesInit();
-                startPressed = false;
-                alreadyShowing = true;
-            }
-        }
+        public bool alreadyShowing = false;
 
         public void windowAnim2(object? sender, EventArgs e)
         {
@@ -189,9 +147,9 @@ namespace StartScreen
             else
             {
                 counter2.Stop();
-                //MainWindow.Instance.closeAnimDone = true;
-                MainWindow.Instance.Hide();
-                GC.Collect();
+                //MainWindow.Instance.Hide();
+                //GC.Collect();
+                Environment.Exit(0);
             }
         }
 
@@ -203,40 +161,30 @@ namespace StartScreen
                 counter.Stop();
         }
 
-        public bool hidden = false;
-        private HwndSource hwndSource;
-        private static IntPtr WndProc(IntPtr hwnd, int msg, IntPtr wParam, IntPtr lParam, ref bool handled)
-        {
-            return IntPtr.Zero;
-        }
-        private void MainWindow_Loaded(object sender, RoutedEventArgs e)
-        {
-            hwndSource = HwndSource.FromHwnd(new WindowInteropHelper(this).Handle);
-            Logger.info("Adding HWND Hook for receiving messages");
-            hwndSource.AddHook(new HwndSourceHook(WndProc));
-        }
-        bool startPressed = false;
-        private void Grid_KeyDown(object sender, System.Windows.Input.KeyEventArgs e)
-        {
-            if (e.Key == Key.LWin || e.Key == Key.RWin)
-            {
-                startPressed = true;
-                Home.closeAppAnim();
-            }
-        }
-        private void mainWindow_Closing(object sender, System.ComponentModel.CancelEventArgs e)
-        {
+        //private HwndSource hwndSource;
+        //private static IntPtr WndProc(IntPtr hwnd, int msg, IntPtr wParam, IntPtr lParam, ref bool handled)
+        //{
+        //    return IntPtr.Zero;
+        //}
 
-        }
-
-        private void mainWindow_Deactivated(object sender, EventArgs e)
-        {
-            if (startPressed) return;
-            Home.closeAppAnim();
-        }
+        //private void MainWindow_Loaded(object sender, RoutedEventArgs e)
+        //{
+        //    hwndSource = HwndSource.FromHwnd(new WindowInteropHelper(this).Handle);
+        //    Logger.info("Adding HWND Hook for receiving messages");
+        //    hwndSource.AddHook(new HwndSourceHook(WndProc));
+        //}
         public void HideWindow()
         {
-            counter2.Start();
+            Environment.Exit(0);
+        }
+
+        private void mainWindow_KeyUp(object sender, KeyEventArgs e)
+        {
+            if ((e.Key == Key.LWin || e.Key == Key.RWin) &&
+                (e.Key.ToString().Contains("|"))) // <- '|' operator
+            {
+                Environment.Exit(0);
+            }
         }
     }
 }
